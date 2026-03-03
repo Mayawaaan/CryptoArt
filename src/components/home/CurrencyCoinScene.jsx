@@ -1,7 +1,7 @@
 import { Canvas, useFrame } from "@react-three/fiber"
 import { Text, Environment } from "@react-three/drei"
 import { useRef, useState } from "react"
-import currencies from "../../data/CoinSymbols.js"
+import currencies from "../../data/coinSymbols.js"
 
 // function Coin() {
 //   const coinRef = useRef()
