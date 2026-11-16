@@ -15,6 +15,8 @@ function isPortOpen(port) {
 async function main() {
   const children = []
   const backendPort = Number(process.env.PORT || 4000)
+  const contractsPort = Number(process.env.CONTRACTS_PORT || 8545)
+  const skipContracts = process.argv.includes("--no-contracts")
 
   const backendRunning = await isPortOpen(backendPort)
   if (!backendRunning) {
@@ -24,6 +26,26 @@ async function main() {
     children.push(serverProc)
   } else {
     console.log(`CryptoArt backend API already listening on port ${backendPort}.`)
+  }
+
+  if (!skipContracts) {
+    const contractsRunning = await isPortOpen(contractsPort)
+    if (!contractsRunning) {
+      const contractsProc = spawn(
+        process.execPath,
+        ["contracts/scripts/start-render-node.js"],
+        {
+          stdio: "inherit",
+          env: {
+            ...process.env,
+            PORT: String(contractsPort),
+          },
+        }
+      )
+      children.push(contractsProc)
+    } else {
+      console.log(`CryptoArt contracts RPC already listening on port ${contractsPort}.`)
+    }
   }
 
   const npmCmd = process.platform === "win32" ? "npm.cmd" : "npm"

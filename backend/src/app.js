@@ -6,7 +6,7 @@ import helmet from "helmet"
 import cookieParser from "cookie-parser"
 import rateLimit from "express-rate-limit"
 
-import { config } from "./config/env.js"
+import { config, isOriginAllowed } from "./config/env.js"
 import { createCloudinaryService } from "./config/cloudinary.js"
 import { MemoryCache } from "./utils/cache.js"
 import { sendError } from "./utils/envelope.js"
@@ -35,6 +35,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export function createApp(overrides = {}) {
   const app = express()
+  app.set("trust proxy", 1)
 
   const cache = overrides.cache || new MemoryCache()
   const coingecko =
@@ -103,7 +104,7 @@ export function createApp(overrides = {}) {
     cors({
       credentials: true,
       origin(origin, callback) {
-        if (!origin || config.corsOrigins.includes(origin)) {
+        if (isOriginAllowed(origin, config.corsOrigins)) {
           return callback(null, true)
         }
         return callback(
@@ -117,6 +118,14 @@ export function createApp(overrides = {}) {
   )
   app.use(cookieParser())
   app.use(express.json({ limit: "64kb" }))
+
+  app.get("/", (_req, res) => {
+    res.json({
+      status: "ok",
+      service: "cryptoart-backend",
+      health: "/api/health",
+    })
+  })
 
   const limiter = rateLimit({
     windowMs: 60 * 1000,

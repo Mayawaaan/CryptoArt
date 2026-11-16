@@ -1,5 +1,6 @@
 import crypto from "node:crypto"
 import { sendError } from "../utils/envelope.js"
+import { isOriginAllowed } from "../config/env.js"
 
 export const SESSION_COOKIE_NAME = "ca_demo_session"
 const SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000
@@ -42,7 +43,7 @@ export function setDemoSessionCookie(res, sessionId, { secret, isProduction }) {
   const signed = signSessionCookieValue(sessionId, secret)
   res.cookie(SESSION_COOKIE_NAME, signed, {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: isProduction ? "none" : "lax",
     secure: Boolean(isProduction),
     path: "/",
     maxAge: SESSION_MAX_AGE_MS,
@@ -55,8 +56,6 @@ export function createDemoAuthMiddleware({
   sessionSecret,
   isProduction,
 }) {
-  const allowedOriginSet = new Set(corsOrigins)
-
   async function resolveSession(req, _res, next) {
     try {
       const rawCookie = req.cookies?.[SESSION_COOKIE_NAME]
@@ -100,7 +99,7 @@ export function createDemoAuthMiddleware({
 
   function requireSameOriginMutation(req, res, next) {
     const origin = req.headers.origin
-    if (origin && !allowedOriginSet.has(origin)) {
+    if (origin && !isOriginAllowed(origin, corsOrigins)) {
       return sendError(
         res,
         403,
@@ -111,7 +110,7 @@ export function createDemoAuthMiddleware({
     if (!origin && req.headers.referer) {
       try {
         const refOrigin = new URL(req.headers.referer).origin
-        if (!allowedOriginSet.has(refOrigin)) {
+        if (!isOriginAllowed(refOrigin, corsOrigins)) {
           return sendError(
             res,
             403,

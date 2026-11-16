@@ -1,4 +1,12 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api"
+function resolveApiBase() {
+  const raw = (import.meta.env.VITE_API_BASE_URL || "/api").trim().replace(/\/+$/, "")
+  if (raw.startsWith("http") && !raw.endsWith("/api")) {
+    return `${raw}/api`
+  }
+  return raw || "/api"
+}
+
+const API_BASE = resolveApiBase()
 
 async function requestApi(path, { signal, method = "GET", body } = {}) {
   const response = await fetch(`${API_BASE}${path}`, {

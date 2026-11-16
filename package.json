@@ -5,10 +5,18 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/dev.mjs",
+    "dev:web": "node scripts/dev.mjs --no-contracts",
     "dev:frontend": "npm --prefix frontend run dev",
     "dev:backend": "npm --prefix backend run dev",
-    "start:backend": "npm --prefix backend start",
+    "dev:contracts": "npm --prefix contracts start",
+    "install:all": "npm --prefix frontend install && npm --prefix backend install && npm --prefix contracts install",
     "build": "npm --prefix frontend run build",
+    "build:frontend": "npm --prefix frontend run build",
+    "build:backend": "npm --prefix backend install",
+    "build:contracts": "npm --prefix contracts install && npm --prefix contracts run compile",
+    "start": "npm --prefix backend start",
+    "start:backend": "npm --prefix backend start",
+    "start:contracts": "npm --prefix contracts start",
     "preview": "npm --prefix frontend run preview",
     "lint": "npm --prefix frontend run lint && npm --prefix backend run lint",
     "test:backend": "npm --prefix backend test",
@@ -17,6 +25,8 @@
     "contracts:compile": "npm --prefix contracts run compile",
     "contracts:test": "npm --prefix contracts test",
     "contracts:node": "npm --prefix contracts run node",
-    "contracts:deploy:local": "npm --prefix contracts run deploy:local"
+    "contracts:deploy:manifest": "npm --prefix contracts run deploy:manifest",
+    "contracts:deploy:local": "npm --prefix contracts run deploy:local",
+    "contracts:deploy:sepolia": "npm --prefix contracts run deploy:sepolia"
   }
 }

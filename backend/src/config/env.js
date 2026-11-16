@@ -12,16 +12,44 @@ function parsePositiveInt(value, fallback) {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
 }
 
+export function normalizeOrigin(origin) {
+  return String(origin || "")
+    .trim()
+    .replace(/\/+$/, "")
+}
+
+export function isOriginAllowed(origin, allowedOrigins = []) {
+  if (!origin) return true
+  const clean = normalizeOrigin(origin)
+  for (const rawPattern of allowedOrigins) {
+    const pattern = normalizeOrigin(rawPattern)
+    if (!pattern) continue
+    if (pattern === "*" || pattern === clean) return true
+    if (pattern.includes("*")) {
+      const escaped = pattern
+        .replace(/[.+?^${}()|[\]\\]/g, "\\$&")
+        .replace(/\*/g, "[a-zA-Z0-9-]+")
+      const rx = new RegExp(`^${escaped}$`, "i")
+      if (rx.test(clean)) return true
+    }
+  }
+  return false
+}
+
 const rawSessionSecret = process.env.DEMO_SESSION_SECRET?.trim() || ""
 const ephemeralDevSecret = rawSessionSecret || crypto.randomBytes(32).toString("hex")
 
 export const config = {
   nodeEnv: process.env.NODE_ENV || "development",
-  isProduction: process.env.NODE_ENV === "production",
+  isProduction:
+    process.env.NODE_ENV === "production" || Boolean(process.env.RENDER),
   port: parsePositiveInt(process.env.PORT, 4000),
-  corsOrigins: (process.env.CORS_ORIGIN || "http://localhost:5173,http://127.0.0.1:5173")
+  corsOrigins: (
+    process.env.CORS_ORIGIN ||
+    "http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173"
+  )
     .split(",")
-    .map((origin) => origin.trim())
+    .map((origin) => normalizeOrigin(origin))
     .filter(Boolean),
   mongodbUri: process.env.MONGODB_URI?.trim() || "",
   cloudinary: {

@@ -1,20 +1,53 @@
 import { createConfig, http } from "wagmi"
-import { hardhat, sepolia } from "wagmi/chains"
+import { hardhat as baseHardhat, sepolia } from "wagmi/chains"
 import { injected } from "wagmi/connectors"
-import deployments from "../contracts/deployments.json"
+import staticDeployments from "../contracts/deployments.json"
 
-export const SUPPORTED_CHAINS = [hardhat, sepolia]
+const rawHardhatRpc =
+  import.meta.env.VITE_HARDHAT_RPC_URL?.trim() ||
+  import.meta.env.VITE_CONTRACTS_RPC_URL?.trim() ||
+  "http://127.0.0.1:8545"
+
+export const HARDHAT_RPC_URL = rawHardhatRpc.replace(/\/+$/, "")
 
 const sepoliaRpc = import.meta.env.VITE_SEPOLIA_RPC_URL?.trim() || undefined
+
+export const hardhatChain = {
+  ...baseHardhat,
+  name: HARDHAT_RPC_URL.includes("127.0.0.1") || HARDHAT_RPC_URL.includes("localhost")
+    ? "Hardhat Local"
+    : "CryptoArt Render RPC",
+  rpcUrls: {
+    default: { http: [HARDHAT_RPC_URL] },
+    public: { http: [HARDHAT_RPC_URL] },
+  },
+}
+
+export const SUPPORTED_CHAINS = [hardhatChain, sepolia]
 
 export const wagmiConfig = createConfig({
   chains: SUPPORTED_CHAINS,
   connectors: [injected()],
   transports: {
-    [hardhat.id]: http("http://127.0.0.1:8545"),
+    [hardhatChain.id]: http(HARDHAT_RPC_URL),
     [sepolia.id]: http(sepoliaRpc),
   },
 })
+
+const runtimeDeployments = { ...staticDeployments }
+
+if (typeof window !== "undefined" && HARDHAT_RPC_URL) {
+  fetch(`${HARDHAT_RPC_URL}/deployments`)
+    .then((res) => (res.ok ? res.json() : null))
+    .then((json) => {
+      if (json && typeof json === "object") {
+        Object.assign(runtimeDeployments, json)
+      }
+    })
+    .catch(() => {
+      // Fallback to staticDeployments bundled in frontend/src/contracts/deployments.json
+    })
+}
 
 export function isSupportedChainId(chainId) {
   return SUPPORTED_CHAINS.some((c) => c.id === chainId)
@@ -22,7 +55,7 @@ export function isSupportedChainId(chainId) {
 
 export function getChainContracts(chainId) {
   if (!chainId) return null
-  return deployments[String(chainId)]?.contracts || null
+  return runtimeDeployments[String(chainId)]?.contracts || null
 }
 
 export function getExplorerTxUrl(chainId, txHash) {

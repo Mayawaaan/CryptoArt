@@ -3,6 +3,7 @@ require("dotenv").config({ path: require("path").resolve(__dirname, ".env") })
 
 const sepoliaUrl = process.env.SEPOLIA_RPC_URL || ""
 const deployerKey = process.env.DEPLOYER_PRIVATE_KEY || ""
+const localRpcUrl = process.env.HARDHAT_LOCAL_RPC_URL || "http://127.0.0.1:8545"
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -21,7 +22,7 @@ module.exports = {
       chainId: 31337,
     },
     localhost: {
-      url: "http://127.0.0.1:8545",
+      url: localRpcUrl,
       chainId: 31337,
     },
     ...(sepoliaUrl && deployerKey

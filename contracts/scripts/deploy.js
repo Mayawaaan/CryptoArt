@@ -11,7 +11,9 @@ async function main() {
     throw new Error("Refusing automatic deployment to Ethereum mainnet.")
   }
 
-  console.log(`Deploying CryptoArt prototype suite to chainId=${chainId} (${hre.network.name}) with ${deployer.address}`)
+  console.log(
+    `Deploying CryptoArt prototype suite to chainId=${chainId} (${hre.network.name}) with ${deployer.address}`
+  )
 
   const Token = await hre.ethers.getContractFactory("CryptoArtToken")
   const token = await Token.deploy(deployer.address)
@@ -58,18 +60,18 @@ async function main() {
   // Seed 3 prototype NFT auctions matching gallery items
   const seedListings = [
     {
-      title: "Neural Nexus #842",
-      uri: "ipfs://cryptoart-prototype/neural-nexus-842",
+      title: "Meridian Geometry I",
+      uri: "ipfs://cryptoart-prototype/meridian-geometry-1",
       reserve: hre.ethers.parseEther("0.05"),
     },
     {
-      title: "Ethereal Wave #12",
-      uri: "ipfs://cryptoart-prototype/ethereal-wave-12",
+      title: "Harmonic Lattice IV",
+      uri: "ipfs://cryptoart-prototype/harmonic-lattice-4",
       reserve: hre.ethers.parseEther("0.03"),
     },
     {
-      title: "Future Walker #21",
-      uri: "ipfs://cryptoart-prototype/future-walker-21",
+      title: "Orbital Relay Series",
+      uri: "ipfs://cryptoart-prototype/orbital-relay-3",
       reserve: hre.ethers.parseEther("0.08"),
     },
   ]
@@ -79,24 +81,7 @@ async function main() {
     ).wait()
   }
 
-  if (hre.network.name === "hardhat") {
-    console.log("Ephemeral Hardhat dry-run succeeded; skipping src/contracts/deployments.json write.")
-    return
-  }
-
-  const deploymentsPath = path.resolve(__dirname, "../../frontend/src/contracts/deployments.json")
-  fs.mkdirSync(path.dirname(deploymentsPath), { recursive: true })
-
-  let existing = {}
-  if (fs.existsSync(deploymentsPath)) {
-    try {
-      existing = JSON.parse(fs.readFileSync(deploymentsPath, "utf8"))
-    } catch {
-      existing = {}
-    }
-  }
-
-  existing[String(chainId)] = {
+  const manifestEntry = {
     network: hre.network.name,
     chainId,
     deployedAt: new Date().toISOString(),
@@ -109,8 +94,34 @@ async function main() {
     },
   }
 
-  fs.writeFileSync(deploymentsPath, JSON.stringify(existing, null, 2), "utf8")
-  console.log("Deployment manifest written to src/contracts/deployments.json")
+  if (hre.network.name === "hardhat" && !process.env.WRITE_DEPLOYMENTS_ON_HARDHAT) {
+    console.log("Ephemeral Hardhat dry-run succeeded; skipping deployments.json write.")
+    return
+  }
+
+  const targetPaths = [
+    path.resolve(__dirname, "../deployments.json"),
+    path.resolve(__dirname, "../../frontend/src/contracts/deployments.json"),
+  ]
+
+  for (const targetPath of targetPaths) {
+    try {
+      fs.mkdirSync(path.dirname(targetPath), { recursive: true })
+      let existing = {}
+      if (fs.existsSync(targetPath)) {
+        try {
+          existing = JSON.parse(fs.readFileSync(targetPath, "utf8"))
+        } catch {
+          existing = {}
+        }
+      }
+      existing[String(chainId)] = manifestEntry
+      fs.writeFileSync(targetPath, JSON.stringify(existing, null, 2), "utf8")
+      console.log(`Deployment manifest written to ${targetPath}`)
+    } catch (err) {
+      console.warn(`Could not write deployment manifest to ${targetPath}: ${err.message}`)
+    }
+  }
 }
 
 main().catch((error) => {
