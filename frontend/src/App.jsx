@@ -6,6 +6,8 @@ import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
 import Router from "./app/router"
 import WalletModal from "./components/wallet/WalletModal"
+import WebsiteLoader from "./components/common/WebsiteLoader"
+import ErrorBoundary from "./components/common/ErrorBoundary"
 
 import { ThemeProvider } from "./context/ThemeContext"
 import { LenisProvider } from "./context/LenisContext"
@@ -23,10 +25,13 @@ const App = () => {
           <ThemeProvider>
             <ToastProvider>
               <DemoWalletProvider>
-                <Navbar />
-                <Router />
-                <Footer />
-                <WalletModal />
+                <ErrorBoundary>
+                  <WebsiteLoader />
+                  <Navbar />
+                  <Router />
+                  <Footer />
+                  <WalletModal />
+                </ErrorBoundary>
               </DemoWalletProvider>
             </ToastProvider>
           </ThemeProvider>

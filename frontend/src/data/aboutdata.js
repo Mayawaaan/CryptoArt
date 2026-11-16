@@ -600,10 +600,7 @@ const aboutData = {
           "Modular Component Design",
           "Cross-Module State Integration",
         ],
-        socials: {
-          instagram: "https://instagram.com/yourusername",
-          linkedin: "https://linkedin.com/in/yourusername",
-        },
+        socials: {},
         description:
           "Led overall architecture planning, implemented core platform components, and established the modular design boundaries that guided CryptoArt from its initial 2022 structure through the 2026 full-stack rebuild.",
         extendedBio:
@@ -638,10 +635,7 @@ const aboutData = {
           "Market Feed Normalization",
           "Persistence & Business Logic",
         ],
-        socials: {
-          instagram: "https://instagram.com/yourusername",
-          linkedin: "https://linkedin.com/in/yourusername",
-        },
+        socials: {},
         description:
           "Designed the backend business logic structure, database schemas, and system-level functional integrations—ensuring the API layer supports resilient market aggregation, atomic demo credit accounting, and future analytics expansion.",
         extendedBio:
@@ -659,9 +653,7 @@ const aboutData = {
         "Academic Validation",
         "Early-Stage Strategic Guidance",
       ],
-      socials: {
-        linkedin: "https://linkedin.com/in/yourusername",
-      },
+      socials: {},
       description:
         "Provided architectural direction, academic validation, and critical feedback during the 2022–2023 foundation phase of CryptoArt. While his mentorship anchored the project's academic beginnings, the 2026 full-stack redesign was driven by the engineering team's subsequent industry growth and vision for a sustainable digital product.",
     },
