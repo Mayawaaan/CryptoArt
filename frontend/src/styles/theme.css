@@ -1,0 +1,140 @@
+/* ==========================================================================
+   CryptoArt Design System — Obsidian, Frost White, Cerulean & Magenta Palette
+   --------------------------------------------------------------------------
+   Core Palette Anchors:
+     --ca-base      : #0A0A0A (Obsidian black — dominant background & surfaces)
+     --ca-text      : #F2F7FA (Frost white — high-contrast foreground typography)
+     --ca-accent    : #007BA7 (Cerulean blue — primary interactive & chart anchor)
+     --ca-highlight : #FF2D95 (Cyber magenta — secondary accent, rim & negative signal)
+
+   All 50..950 scales, alpha tokens, semantic aliases, Tailwind theme
+   mappings, charts, and Three.js/WebGL material colors derive automatically
+   from these anchors via color-mix(in oklab, ...).
+   ========================================================================== */
+
+:root {
+  --ca-base: #0A0A0A;
+  --ca-text: #F2F7FA;
+  --ca-accent: #007BA7;
+  --ca-highlight: #FF2D95;
+
+  /* Active mode polarity anchors (default: dark) */
+  --_base: var(--ca-base);
+  --_text: var(--ca-text);
+  --_accent: color-mix(in oklab, var(--ca-accent) 78%, var(--ca-text));
+  --_highlight: color-mix(in oklab, var(--ca-highlight) 82%, var(--ca-text));
+  color-scheme: dark;
+
+  /* ------------------------------------------------------------------------
+     Derived Base Scale (950 = dominant base anchor -> 50 = lightest tint)
+     Subtle cerulean undertone prevents #0A0A0A cards from looking muddy grey.
+     ------------------------------------------------------------------------ */
+  --ca-base-950: var(--_base);
+  --ca-base-900: color-mix(in oklab, var(--_base) 93%, color-mix(in oklab, var(--_text) 65%, var(--ca-accent)));
+  --ca-base-800: color-mix(in oklab, var(--_base) 86%, color-mix(in oklab, var(--_text) 70%, var(--ca-accent)));
+  --ca-base-700: color-mix(in oklab, var(--_base) 78%, color-mix(in oklab, var(--_text) 75%, var(--ca-accent)));
+  --ca-base-600: color-mix(in oklab, var(--_base) 68%, var(--_text));
+  --ca-base-500: color-mix(in oklab, var(--_base) 56%, var(--_text));
+  --ca-base-400: color-mix(in oklab, var(--_base) 44%, var(--_text));
+  --ca-base-300: color-mix(in oklab, var(--_base) 32%, var(--_text));
+  --ca-base-200: color-mix(in oklab, var(--_base) 20%, var(--_text));
+  --ca-base-100: color-mix(in oklab, var(--_base) 11%, var(--_text));
+  --ca-base-50:  color-mix(in oklab, var(--_base) 5%,  var(--_text));
+
+  /* ------------------------------------------------------------------------
+     Derived Text Scale (50 = Frost White primary ink -> 950 = deepest dim)
+     ------------------------------------------------------------------------ */
+  --ca-text-50:  var(--_text);
+  --ca-text-100: color-mix(in oklab, var(--_text) 90%, var(--_base));
+  --ca-text-200: color-mix(in oklab, var(--_text) 78%, var(--_base));
+  --ca-text-300: color-mix(in oklab, var(--_text) 66%, var(--_base));
+  --ca-text-400: color-mix(in oklab, var(--_text) 56%, var(--_base));
+  --ca-text-500: color-mix(in oklab, var(--_text) 46%, var(--_base));
+  --ca-text-600: color-mix(in oklab, var(--_text) 36%, var(--_base));
+  --ca-text-700: color-mix(in oklab, var(--_text) 26%, var(--_base));
+  --ca-text-800: color-mix(in oklab, var(--_text) 16%, var(--_base));
+  --ca-text-900: color-mix(in oklab, var(--_text) 9%,  var(--_base));
+  --ca-text-950: color-mix(in oklab, var(--_text) 4%,  var(--_base));
+
+  /* ------------------------------------------------------------------------
+     Derived Cerulean Accent Scale (500 = core interactive anchor)
+     ------------------------------------------------------------------------ */
+  --ca-accent-50:  color-mix(in oklab, var(--_accent) 18%, var(--_text));
+  --ca-accent-100: color-mix(in oklab, var(--_accent) 34%, var(--_text));
+  --ca-accent-200: color-mix(in oklab, var(--_accent) 52%, var(--_text));
+  --ca-accent-300: color-mix(in oklab, var(--_accent) 70%, var(--_text));
+  --ca-accent-400: color-mix(in oklab, var(--_accent) 85%, var(--_text));
+  --ca-accent-500: var(--_accent);
+  --ca-accent-600: color-mix(in oklab, var(--ca-accent) 88%, var(--_base));
+  --ca-accent-700: color-mix(in oklab, var(--ca-accent) 72%, var(--_base));
+  --ca-accent-800: color-mix(in oklab, var(--ca-accent) 54%, var(--_base));
+  --ca-accent-900: color-mix(in oklab, var(--ca-accent) 36%, var(--_base));
+  --ca-accent-950: color-mix(in oklab, var(--ca-accent) 18%, var(--_base));
+
+  /* ------------------------------------------------------------------------
+     Transparency & Surface Overlay Helpers
+     ------------------------------------------------------------------------ */
+  --ca-accent-soft:   color-mix(in oklab, var(--ca-accent-500) 15%, transparent);
+  --ca-accent-subtle: color-mix(in oklab, var(--ca-accent-500) 25%, transparent);
+  --ca-accent-border: color-mix(in oklab, var(--ca-accent-500) 42%, transparent);
+  --ca-overlay:       color-mix(in oklab, var(--ca-base-950) 78%, transparent);
+  --ca-text-tint:     color-mix(in oklab, var(--ca-text-50) 8%, transparent);
+
+  /* ------------------------------------------------------------------------
+     Semantic Aliases
+     ------------------------------------------------------------------------ */
+  --ca-background:        var(--ca-base-950);
+  --ca-surface:           var(--ca-base-900);
+  --ca-surface-raised:    var(--ca-base-800);
+  --ca-surface-elevated:  var(--ca-base-700);
+  --ca-surface-hover:     color-mix(in oklab, var(--ca-base-700) 65%, var(--ca-base-800));
+
+  --ca-border:            color-mix(in oklab, var(--ca-text-50) 12%, var(--ca-base-800));
+  --ca-border-strong:     color-mix(in oklab, var(--ca-text-50) 22%, var(--ca-base-700));
+  --ca-divider:           color-mix(in oklab, var(--ca-text-50) 8%, var(--ca-base-900));
+
+  --ca-text-primary:      var(--ca-text-50);
+  --ca-text-secondary:    var(--ca-text-200);
+  --ca-text-muted:        var(--ca-text-400);
+  --ca-text-inverse:      var(--ca-base-950);
+
+  --ca-interactive:       var(--ca-accent-500);
+  --ca-interactive-hover: var(--ca-accent-400);
+  --ca-interactive-active:var(--ca-accent-600);
+  --ca-interactive-text:  var(--ca-base-950);
+  --ca-focus-ring:        color-mix(in oklab, var(--ca-accent-400) 65%, transparent);
+
+  /* Financial / Status Indicators (Cerulean positive vs Cyber Magenta negative) */
+  --ca-positive:          var(--ca-accent-300);
+  --ca-positive-bg:       color-mix(in oklab, var(--ca-accent-400) 15%, transparent);
+  --ca-negative:          var(--_highlight);
+  --ca-negative-bg:       color-mix(in oklab, var(--ca-highlight) 15%, transparent);
+  --ca-warning:           color-mix(in oklab, var(--_highlight) 55%, var(--ca-accent-300));
+  --ca-warning-bg:        color-mix(in oklab, var(--ca-highlight) 12%, transparent);
+
+  /* Chart & Data Visualization Series (Cerulean primary + Magenta secondary) */
+  --ca-chart-series-1:    var(--ca-accent-500);
+  --ca-chart-series-2:    var(--_highlight);
+  --ca-chart-series-3:    var(--_highlight);
+  --ca-chart-grid:        var(--ca-divider);
+  --ca-chart-axis:        var(--ca-text-400);
+
+  /* 3D Scene & Shader Uniform Sources (Cerulean metal + Magenta-Cerulean rim glow) */
+  --ca-scene-metal:       var(--ca-accent-600);
+  --ca-scene-rim:         color-mix(in oklab, var(--ca-accent-400) 68%, var(--_highlight));
+  --ca-scene-engraving:   var(--ca-base-950);
+  --ca-scene-label:       var(--ca-text-50);
+  --ca-scene-light-key:   var(--ca-text-100);
+  --ca-scene-light-fill:  color-mix(in oklab, var(--ca-accent-300) 62%, var(--_highlight));
+}
+
+/* Light Mode Polarity Inversion (Frost White ground + Obsidian ink + Deep Cerulean & Magenta) */
+:root[data-theme="light"] {
+  --_base: var(--ca-text);
+  --_text: var(--ca-base);
+  --_accent: var(--ca-accent);
+  --_highlight: color-mix(in oklab, var(--ca-highlight) 82%, var(--ca-base));
+  --ca-text-inverse: var(--ca-text);
+  --ca-interactive-text: var(--ca-text);
+  color-scheme: light;
+}

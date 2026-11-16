@@ -7,10 +7,30 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+frontend/node_modules
+backend/node_modules
+contracts/node_modules
+
+# Build & Hardhat outputs
 dist
-dist-ssr
+frontend/dist
+frontend/dist-ssr
+contracts/cache
+contracts/artifacts
+contracts/typechain-types
+
+# Environment & secrets
+.env
+.env.*
+**/.env
+**/.env.*
+!**/.env.example
 *.local
+
+# Runtime persisted storage
+backend/data/*.json
 
 # Editor directories and files
 .vscode/*

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+  <rect width="800" height="800" fill="#10151E"/>
+  <rect x="200" y="200" width="400" height="400" fill="none" stroke="#9CAFE6" stroke-width="2.5"/>
+  <path d="M200 400 L400 200 L600 400 L400 600 Z" fill="none" stroke="#E9EDF4" stroke-width="2"/>
+  <circle cx="400" cy="400" r="85" fill="none" stroke="#9CAFE6" stroke-width="2" stroke-dasharray="8 8"/>
+  <text x="400" y="416" text-anchor="middle" fill="#E9EDF4" font-family="monospace" font-size="36" letter-spacing="4">.ART</text>
+</svg>

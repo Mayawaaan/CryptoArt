@@ -1,13 +1,32 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import { createRequire } from 'node:module'
+import { pathToFileURL } from 'node:url'
+
+const frontendRequire = createRequire(new URL('./frontend/package.json', import.meta.url))
+const loadFromFrontend = async (specifier) => {
+  const mod = await import(pathToFileURL(frontendRequire.resolve(specifier)).href)
+  return mod.default ?? mod
+}
+
+const js = await loadFromFrontend('@eslint/js')
+const globals = await loadFromFrontend('globals')
+const reactHooks = await loadFromFrontend('eslint-plugin-react-hooks')
+const reactRefresh = await loadFromFrontend('eslint-plugin-react-refresh')
+const { defineConfig, globalIgnores } = await import(
+  pathToFileURL(frontendRequire.resolve('eslint/config')).href
+)
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores([
+    'frontend/dist',
+    'frontend/node_modules',
+    'backend/node_modules',
+    'contracts/node_modules',
+    'contracts/artifacts',
+    'contracts/cache',
+    'contracts/typechain-types',
+  ]),
   {
-    files: ['**/*.{js,jsx}'],
+    files: ['frontend/src/**/*.{js,jsx}'],
     extends: [
       js.configs.recommended,
       reactHooks.configs['recommended-latest'],
@@ -23,7 +42,33 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'no-unused-vars': ['error', { varsIgnorePattern: '^(?:[A-Z_]|motion$)' }],
+    },
+  },
+  {
+    files: ['backend/**/*.js', 'scripts/**/*.mjs'],
+    extends: [js.configs.recommended],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      globals: globals.node,
+      sourceType: 'module',
+    },
+    rules: {
+      'no-unused-vars': ['error', { varsIgnorePattern: '^(?:[A-Z_]|motion$)' }],
+    },
+  },
+  {
+    files: ['contracts/**/*.js'],
+    extends: [js.configs.recommended],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      globals: {
+        ...globals.node,
+        ...globals.mocha,
+      },
+    },
+    rules: {
+      'no-unused-vars': ['error', { varsIgnorePattern: '^(?:[A-Z_]|motion$)' }],
     },
   },
 ])
