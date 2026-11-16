@@ -3,10 +3,13 @@ import { hardhat as baseHardhat, sepolia } from "wagmi/chains"
 import { injected } from "wagmi/connectors"
 import staticDeployments from "../contracts/deployments.json"
 
-const rawHardhatRpc =
+const rawHardhatRpc = (
   import.meta.env.VITE_HARDHAT_RPC_URL?.trim() ||
   import.meta.env.VITE_CONTRACTS_RPC_URL?.trim() ||
   "http://127.0.0.1:8545"
+)
+  .replace(/^(https?:\/\/)+(https?:?\/\/)/i, "https://")
+  .replace(/^https\/\//i, "https://")
 
 export const HARDHAT_RPC_URL = rawHardhatRpc.replace(/\/+$/, "")
 

@@ -1,5 +1,7 @@
 function resolveApiBase() {
-  const raw = (import.meta.env.VITE_API_BASE_URL || "/api").trim().replace(/\/+$/, "")
+  let raw = (import.meta.env.VITE_API_BASE_URL || "/api").trim()
+  raw = raw.replace(/^(https?:\/\/)+(https?:?\/\/)/i, "https://")
+  raw = raw.replace(/^https\/\//i, "https://").replace(/\/+$/, "")
   if (raw.startsWith("http") && !raw.endsWith("/api")) {
     return `${raw}/api`
   }
