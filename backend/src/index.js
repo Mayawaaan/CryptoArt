@@ -1,5 +1,6 @@
 import { config } from "./config/env.js"
 import { connectDatabase, disconnectDatabase } from "./config/db.js"
+import { ensureSampleNftsSeeded } from "./scripts/seedNfts.js"
 import { createApp } from "./app.js"
 
 async function startServer() {
@@ -14,6 +15,14 @@ async function startServer() {
     console.log(
       `[CryptoArt Backend] MongoDB connected (replicaSet=${dbStatus.replicaSet})`
     )
+    try {
+      const { inserted } = await ensureSampleNftsSeeded()
+      if (inserted > 0) {
+        console.log(`[CryptoArt Backend] Auto-seeded ${inserted} initial sample NFT(s).`)
+      }
+    } catch (seedErr) {
+      console.warn(`[CryptoArt Backend] Sample NFT auto-seed skipped: ${seedErr.message}`)
+    }
   } else {
     console.warn(
       `[CryptoArt Backend] MongoDB unavailable (${dbStatus.reason}). Market APIs remain active; DB-backed demo/NFT routes will return 503.`

@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url"
 import { config } from "../config/env.js"
 import { connectDatabase, disconnectDatabase } from "../config/db.js"
 import { NFT } from "../models/NFT.js"
@@ -153,13 +154,7 @@ const SAMPLE_LISTINGS = [
   },
 ]
 
-async function runSeed() {
-  const conn = await connectDatabase(config.mongodbUri)
-  if (!conn.connected) {
-    console.error(`Seed aborted: ${conn.reason}`)
-    process.exit(1)
-  }
-
+export async function ensureSampleNftsSeeded() {
   let inserted = 0
   let skipped = 0
 
@@ -179,11 +174,27 @@ async function runSeed() {
     inserted += 1
   }
 
+  return { inserted, skipped }
+}
+
+async function runSeed() {
+  const conn = await connectDatabase(config.mongodbUri)
+  if (!conn.connected) {
+    console.error(`Seed aborted: ${conn.reason}`)
+    process.exit(1)
+  }
+
+  const { inserted, skipped } = await ensureSampleNftsSeeded()
   console.log(`CryptoArt sample NFT seed complete: ${inserted} inserted, ${skipped} already present.`)
   await disconnectDatabase()
 }
 
-runSeed().catch((err) => {
-  console.error("Seed error:", err)
-  process.exit(1)
-})
+const isDirectRun =
+  process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]
+
+if (isDirectRun) {
+  runSeed().catch((err) => {
+    console.error("Seed error:", err)
+    process.exit(1)
+  })
+}
